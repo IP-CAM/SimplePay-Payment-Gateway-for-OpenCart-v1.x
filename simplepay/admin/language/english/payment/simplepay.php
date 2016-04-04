@@ -21,6 +21,7 @@ $_['entry_public_test_key'] = 'Public Test API Key';
 $_['entry_description'] = 'Description';
 $_['entry_image'] = 'Custom Image URL';
 $_['entry_status'] = 'Status';
+$_['entry_sort_order'] = 'Sort Order';
 
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify payment SimplePay!';

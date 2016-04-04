@@ -44,6 +44,7 @@ class ControllerPaymentSimplePay extends Controller
         $this->data['help_test'] = $this->language->get('help_test');
         $this->data['help_description'] = $this->language->get('help_description');
         $this->data['help_image'] = $this->language->get('help_image');
+        $this->data['entry_sort_order'] = $this->language->get('entry_sort_order');
 
         $this->data['button_save'] = $this->language->get('button_save');
         $this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -163,6 +164,12 @@ class ControllerPaymentSimplePay extends Controller
             $this->data['simplepay_status'] = $this->request->post['simplepay_status'];
         } else {
             $this->data['simplepay_status'] = $this->config->get('simplepay_status');
+        }
+
+        if (isset($this->request->post['simplepay_sort_order'])) {
+            $this->data['simplepay_sort_order'] = $this->request->post['simplepay_sort_order'];
+        } else {
+            $this->data['simplepay_sort_order'] = $this->config->get('simplepay_sort_order');
         }
 
         $this->template = 'payment/simplepay.tpl';

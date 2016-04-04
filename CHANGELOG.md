@@ -1,3 +1,7 @@
+## 1.0.2 (April 4, 2016)
+
+- Add sort order
+
 ## 1.0.1 (April 4, 2016)
 
 - Fix checkout page
