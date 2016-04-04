@@ -20,4 +20,4 @@ Super-fast account activation. Top-notch customer support. Support for all curre
 Please send us an email to support@simplepay.ng
 
 ## Contribute
-To contribute to this plugin feel free to fork it on GitHub - https://github.com/simplepayng/simplepay-opencart
+To contribute to this plugin feel free to fork it on GitHub - https://github.com/simplepayng/simplepay-opencart1
