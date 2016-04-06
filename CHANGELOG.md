@@ -1,3 +1,8 @@
+## 1.0.3 (April 6, 2016)
+
+- Add SimplePay logo to checkout
+- Fix currency code
+
 ## 1.0.2 (April 4, 2016)
 
 - Add sort order

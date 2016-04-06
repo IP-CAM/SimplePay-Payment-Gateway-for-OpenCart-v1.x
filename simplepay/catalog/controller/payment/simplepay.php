@@ -22,7 +22,7 @@ class ControllerPaymentSimplePay extends Controller
         $this->data['city'] = $order_info['payment_city'];
         $this->data['country'] = $order_info['payment_iso_code_2'];
         $this->data['amount'] = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false);
-        $this->data['currency'] = $this->currency->getCode();
+        $this->data['currency'] = $order_info['currency_code'];
         $this->data['image'] = $this->config->get('simplepay_image');
 
         if ($this->config->get('simplepay_test')) {
