@@ -10,7 +10,9 @@
             url: 'index.php?route=payment/simplepay/send',
             type: 'post',
             data: {
-                token: token
+                token: token,
+                amount: SimplePay.amountToLower('<?php echo $amount; ?>'),
+                currency: '<?php echo $currency; ?>'
             },
             dataType: 'json',
             success: function (response) {
@@ -31,7 +33,7 @@
     var handler;
     jQuery.getScript('https://checkout.simplepay.ng/simplepay.js').done(function () {
         handler = SimplePay.configure({
-            platform: 'opencart-1',
+            platform: 'opencart-2',
             token: processPayment,
             key: '<?php echo $key; ?>',
             image: '<?php echo $image; ?>'

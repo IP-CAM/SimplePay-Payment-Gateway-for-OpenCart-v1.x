@@ -57,10 +57,36 @@ class ControllerPaymentSimplePay extends Controller
         }
 
         // Verify SimplePay transaction
-        $token = $this->request->post['token'];
+        $verified_transaction = $this->verify_transaction(
+            $this->request->post['token'],
+            $this->request->post['amount'],
+            $this->request->post['currency'],
+            $private_key);
 
+        $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('config_order_status_id'));
+
+        if ($verified_transaction['verified']) {
+            $this->model_checkout_order->update($this->session->data['order_id'], $order_status_complete, 'Success', false);
+
+            $json['success'] = $this->url->link('checkout/success');
+
+        } else {
+            $this->model_checkout_order->update($this->session->data['order_id'], $order_status_failed, 'Failed', false);
+
+            $this->log->write('SimplePay Payment failed: ' . $response_code);
+            $json['error'] = $response_code;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    private function verify_transaction($token, $amount, $currency, $private_key)
+    {
         $data = array(
-            'token' => $token
+            'token' => $token,
+            'amount' => $amount,
+            'currency' => $currency
         );
         $data_string = json_encode($data);
 
@@ -78,32 +104,39 @@ class ControllerPaymentSimplePay extends Controller
             'Content-Length: ' . strlen($data_string)
         ));
 
-        $curl_response = curl_exec($ch);
-        $curl_response = preg_split("/\r\n\r\n/", $curl_response);
-        $response_content = $curl_response[1];
-        $json_response = json_decode(chop($response_content), true);
-
-        $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $verify_count = 1;
+        $response = $this->do_curl($ch);
+        $verified = $this->valid_response($response);
+        while (!$verified && $verify_count < 3) {
+            $response = $this->do_curl($ch);
+            $verified = $this->valid_response($response);
+            $verify_count += 1;
+        }
 
         curl_close($ch);
 
-        $json = array();
+        return array(
+            'verified' => $verified,
+            'response' => $response['json_response']
+        );
+    }
 
-        $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('config_order_status_id'));
+    private function do_curl($ch)
+    {
+        $curl_response = curl_exec($ch);
+        $curl_response = preg_split("/\r\n\r\n/", $curl_response);
+        $response_content = $curl_response[1];
 
-        if ($response_code == '200' && $json_response['response_code'] == '20000') {
-            $this->model_checkout_order->update($this->session->data['order_id'], $order_status_complete, 'Success', false);
+        return array(
+            'response_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
+            'json_response' => json_decode(chop($response_content), true)
+        );
+    }
 
-            $json['success'] = $this->url->link('checkout/success');
-
-        } else {
-            $this->model_checkout_order->update($this->session->data['order_id'], $order_status_failed, 'Failed', false);
-
-            $this->log->write('SimplePay Payment failed: ' . $response_code);
-            $json['error'] = $response_code;
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
+    private function valid_response($response)
+    {
+        return $response['response_code'] == '200' ||
+        $response['response_code'] == '201' ||
+        $response['json_response']['response_code'] == '20000';
     }
 }

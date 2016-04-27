@@ -1,3 +1,7 @@
+## 1.0.4 (April 27, 2016)
+
+- Add retry to verify payment
+
 ## 1.0.3 (April 6, 2016)
 
 - Add SimplePay logo to checkout
